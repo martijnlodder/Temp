@@ -112,13 +112,16 @@ if (isset($_SESSION['username'])) {
 
                 use Aws\Ec2\Ec2Client;
 
-                // Set up AWS region
                 $sharedConfig = [
-                    'region'  => 'eu-central-1',
-                    'version' => 'latest',
+                    'region'      => 'your-region',         // Replace with your AWS region
+                    'version'     => 'latest',
+                    'credentials' => [
+                        'key'    => 'your-access-key',      // Replace with your AWS access key
+                        'secret' => 'your-secret-key',      // Replace with your AWS secret key
+                    ],
                 ];
 
-                // Create an EC2 client with credentials from the default provider chain
+                // Create an EC2 client
                 $ec2Client = new Ec2Client($sharedConfig);
 
                 // Specify the instance ID
