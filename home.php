@@ -113,9 +113,9 @@ if (isset($_SESSION['username'])) {
 
                 use Aws\Ec2\Ec2Client;
 
+                $region = 'eu-central-1';
                 $awsAccessKey = '';
                 $awsSecretKey = '';
-                $region = 'eu-central-1';
 
                 $ec2Client = new Ec2Client([
                     'region'      => $region,
@@ -125,7 +125,8 @@ if (isset($_SESSION['username'])) {
                     ],
                 ]);
 
-                $instanceId = 'i-0960d788581106d8d';
+                // Describe the specific EC2 instance
+                $instanceId = 'i-068d54cd1836731d0';
 
                 try {
                     $result = $ec2Client->describeInstances([
