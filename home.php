@@ -108,27 +108,26 @@ if (isset($_SESSION['username'])) {
             <hr class="divider" />
             <div class="row gx-4 gx-lg-5">
                 <?php
-                require 'json/vendor/autoload.php'; // Include the AWS SDK for PHP
+
+                require 'json/vendor/autoload.php';
 
                 use Aws\Ec2\Ec2Client;
 
-                $sharedConfig = [
-                    'region'      => 'your-region',         // Replace with your AWS region
-                    'version'     => 'latest',
+                $awsAccessKey = '';
+                $awsSecretKey = '';
+                $region = 'eu-central-1';
+
+                $ec2Client = new Ec2Client([
+                    'region'      => $region,
                     'credentials' => [
-                        'key'    => 'your-access-key',      // Replace with your AWS access key
-                        'secret' => 'your-secret-key',      // Replace with your AWS secret key
+                        'key'    => $awsAccessKey,
+                        'secret' => $awsSecretKey,
                     ],
-                ];
+                ]);
 
-                // Create an EC2 client
-                $ec2Client = new Ec2Client($sharedConfig);
-
-                // Specify the instance ID
-                $instanceId = 'i-068d54cd1836731d0';
+                $instanceId = 'i-0960d788581106d8d';
 
                 try {
-                    // Describe the instance
                     $result = $ec2Client->describeInstances([
                         'InstanceIds' => [$instanceId],
                     ]);
