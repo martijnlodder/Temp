@@ -1,40 +1,51 @@
-<?php
-require 'vendor/autoload.php'; // Include the AWS SDK for PHP
+               <?php
 
-use Aws\Ec2\Ec2Client;
+                require 'json/vendor/autoload.php';
 
-// Set up AWS region
-$sharedConfig = [
-    'region'  => 'your-region', // Replace with your AWS region
-    'version' => 'latest',
-];
+                use Aws\Ec2\Ec2Client;
 
-// Create an EC2 client with credentials from the AWS CLI configuration
-$ec2Client = new Ec2Client($sharedConfig);
+                $awsAccessKey = '';
+                $awsSecretKey = '';
+                $region = 'eu-central-1';
 
-// Specify the instance ID
-$instanceId = 'i-068d54cd1836731d0';
+                $ec2Client = new Ec2Client([
+                    'region'      => $region,
+                    'credentials' => [
+                        'key'    => $awsAccessKey,
+                        'secret' => $awsSecretKey,
+                    ],
+                ]);
 
-try {
-    // Describe the instance
-    $result = $ec2Client->describeInstances([
-        'InstanceIds' => [$instanceId],
-    ]);
+                $instanceId = 'i-068d54cd1836731d0';
 
-    // Extract instance information
-    $instance = $result['Reservations'][0]['Instances'][0];
+                try {
+                    $result = $ec2Client->describeInstances([
+                        'InstanceIds' => [$instanceId],
+                    ]);
 
-    // Output instance details
-    echo "Instance ID: {$instance['InstanceId']}\n";
-    echo "Instance State: {$instance['State']['Name']}\n";
-    echo "Public DNS: {$instance['PublicDnsName']}\n";
-    echo "Public IP: {$instance['PublicIpAddress']}\n";
-    echo "Private IP: {$instance['PrivateIpAddress']}\n";
+                    // Check if the instance exists
+                    $reservations = $result['Reservations'];
+                    if (count($reservations) > 0) {
+                        $instance = $reservations[0]['Instances'][0];
 
-    // You can output more details as needed
+                        // Determine the color based on instance state
+                        $stateColor = ($instance['State']['Name'] === 'running') ? 'limegreen' : 'red';
 
-} catch (Exception $e) {
-    // Handle exceptions
-    echo "Error: {$e->getMessage()}\n";
-}
-?>
+                        echo '<div class="col-lg-3 col-md-6 text-center">';
+                        echo '<div class="mt-5">';
+                        echo '<div class="mb-2"><i class="bi-hdd fs-1 text-primary"></i></div>';
+                        echo "<h3 class='h4 mb-2'>EC2 Instance {$instance['InstanceId']}</h3>";
+                        echo "<p class='text-muted mb-0'>State: <strong style='color: {$stateColor};'>{$instance['State']['Name']}</strong></p>";
+                        echo "<p class='text-muted mb-0'>Public IP: <strong>{$instance['PublicIpAddress']}</strong></p>";
+                        echo "<p class='text-muted mb-0'>Private IP: <strong>{$instance['PrivateIpAddress']}</strong></p>";
+                        echo "<p class='text-muted mb-0'>Instance Type: <strong>{$instance['InstanceType']}</strong></p>";
+                        echo '</div>';
+                        echo '</div>';
+                    } else {
+                        echo "Instance with ID {$instanceId} not found.\n";
+                    }
+                } catch (Exception $e) {
+                    echo "Error: {$e->getMessage()}\n";
+                }
+
+                ?>
